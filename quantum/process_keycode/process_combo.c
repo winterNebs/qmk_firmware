@@ -189,6 +189,8 @@ void drop_combo_from_buffer(uint16_t combo_index) {
         queued_combo *qcombo = &combo_buffer[i];
 
         if (qcombo->combo_index == combo_index) {
+            combo_t *combo = &key_combos[combo_index];
+            combo->disabled = true;
 
             if (i == combo_buffer_read) {
                 INCREMENT_MOD(combo_buffer_read);
@@ -200,6 +202,8 @@ void drop_combo_from_buffer(uint16_t combo_index) {
 }
 
 void apply_combo(uint16_t combo_index, combo_t *combo) {
+    /* Apply combo's result keycode to the last chord key of the combo and
+     * disable the other keys. */
 
     // state to check against so we find the last key of the combo from the buffer
 #if defined(EXTRA_EXTRA_LONG_COMBOS)
@@ -364,7 +368,6 @@ static bool process_single_combo(combo_t *combo, uint16_t keycode, keyrecord_t *
             /* First key quickly released */
             if (combo->disabled || _get_combo_must_hold(combo_index, combo)) {
                 // combo wasn't tappable, disable it and drop it from buffer.
-                combo->disabled = true;
                 drop_combo_from_buffer(combo_index);
                 is_combo_active = false;
             }
@@ -453,6 +456,7 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
             // reset state if there are no combo keys pressed at all
             dump_key_buffer();
             timer = 0;
+            clear_combos(true);
         }
     }
     return !is_combo_key;
