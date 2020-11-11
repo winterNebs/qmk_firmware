@@ -19,12 +19,8 @@
 #include "action_tapping.h"
 
 
-#ifndef COMBO_VARIABLE_LEN
-__attribute__((weak)) combo_t key_combos[COMBO_COUNT] = {};
-#else
 extern combo_t  key_combos[];
-extern int      COMBO_LEN;
-#endif
+extern uint16_t COMBO_LEN;
 
 __attribute__((weak)) void process_combo_event(uint16_t combo_index, bool pressed) {}
 
@@ -44,24 +40,17 @@ typedef struct {
     keyrecord_t record;
     uint16_t combo_index;
     uint16_t keycode;
-} queued_record;
+} queued_record_t;
 static uint8_t key_buffer_write = 0;
 static uint8_t key_buffer_read = 0;
-static queued_record key_buffer[MAX_COMBO_LENGTH];
+static queued_record_t key_buffer[MAX_COMBO_LENGTH];
 
 typedef struct {
     uint16_t combo_index;
-#if defined(EXTRA_EXTRA_LONG_COMBOS)
-    uint32_t state;
-#elif defined(EXTRA_LONG_COMBOS)
-    uint16_t state;
-#else
-    uint8_t state;
-#endif
-} queued_combo;
+} queued_combo_t;
 static uint8_t combo_buffer_write= 0;
 static uint8_t combo_buffer_read = 0;
-static queued_combo combo_buffer[MAX_COMBO_LENGTH];
+static queued_combo_t combo_buffer[MAX_COMBO_LENGTH];
 
 #define INCREMENT_MOD(i) i = (i + 1) % MAX_COMBO_LENGTH
 
@@ -109,20 +98,13 @@ static inline uint16_t _get_combo_term(uint16_t combo_index, combo_t *combo) {
     return COMBO_TERM;
 }
 
-void clear_combos(bool clear_state) {
+void clear_combos(void) {
     uint16_t index = 0;
     longest_term = 0;
-#ifndef COMBO_VARIABLE_LEN
-    for (index = 0; index < COMBO_COUNT; ++index)
-#else
-    for (index = 0; index < COMBO_LEN; ++index)
-#endif
-    {
+    for (index = 0; index < COMBO_LEN; ++index) {
         combo_t *combo = &key_combos[index];
         if (!combo->active) {
             combo->disabled = false;
-        }
-        if (clear_state && !combo->active) {
             combo->state = 0;
         }
     }
@@ -138,7 +120,7 @@ static inline void dump_key_buffer(void) {
             INCREMENT_MOD(key_buffer_i)
         ) {
 
-        queued_record *qrecord = &key_buffer[key_buffer_i];
+        queued_record_t *qrecord = &key_buffer[key_buffer_i];
         keyrecord_t *record = &qrecord->record;
 
         if (IS_NOEVENT(record->event)) {
@@ -160,6 +142,7 @@ static inline void dump_key_buffer(void) {
     key_buffer_read = key_buffer_write;
 }
 
+#define NO_COMBO_KEYS_ARE_DOWN (0 == combo->state)
 #define ALL_COMBO_KEYS_ARE_DOWN(state, key_count) (((1 << key_count) - 1) == state)
 #define ONLY_ONE_KEY_IS_DOWN(state) !(state & (state - 1))
 #define KEY_NOT_YET_RELEASED(state, key_index) ((1 << key_index) & state)
@@ -186,7 +169,7 @@ void drop_combo_from_buffer(uint16_t combo_index) {
      * beginning of the buffer, drop it.  */
     uint8_t i = combo_buffer_read;
     while (i != combo_buffer_write) {
-        queued_combo *qcombo = &combo_buffer[i];
+        queued_combo_t *qcombo = &combo_buffer[i];
 
         if (qcombo->combo_index == combo_index) {
             combo_t *combo = &key_combos[combo_index];
@@ -219,7 +202,7 @@ void apply_combo(uint16_t combo_index, combo_t *combo) {
             INCREMENT_MOD(key_buffer_i)
         ) {
 
-        queued_record *qrecord = &key_buffer[key_buffer_i];
+        queued_record_t *qrecord = &key_buffer[key_buffer_i];
         keyrecord_t *record = &qrecord->record;
         uint16_t keycode = qrecord->keycode;
 
@@ -262,13 +245,13 @@ void apply_combos(void) {
             i != combo_buffer_write;
             INCREMENT_MOD(i)) {
 
-        queued_combo *buffered_combo = &combo_buffer[i];
+        queued_combo_t *buffered_combo = &combo_buffer[i];
         combo_t *combo = &key_combos[buffered_combo->combo_index];
 
         apply_combo(buffered_combo->combo_index, combo);
     }
     dump_key_buffer();
-    clear_combos(true);
+    clear_combos();
 }
 
 combo_t* overlaps(combo_t *combo1, combo_t *combo2) {
@@ -300,67 +283,62 @@ static bool process_single_combo(combo_t *combo, uint16_t keycode, keyrecord_t *
     uint16_t key_index = -1;
     _find_key_index_and_count(combo->keys, keycode, &key_index, &key_count);
 
-    /* Continue processing if key isn't part of current combo.
-     * Also disable current combo and reset its state. */
+    /* Continue processing if key isn't part of current combo. */
     if (-1 == (int16_t)key_index) {
-        /* if (!combo->active) { /1* do not clear a combo that has been fired *1/ */
-        /*     combo->disabled = true; */
-        /* } */
         return false;
     }
 
-    bool is_combo_active = !combo->disabled;
+    bool key_is_part_of_combo = !combo->disabled;
 
-    if (record->event.pressed) {
+    if (record->event.pressed && !combo->disabled) {
         uint16_t time = _get_combo_term(combo_index, combo);
         if (!combo->active) {
             KEY_STATE_DOWN(combo->state, key_index);
-            if (longest_term < time && !combo->disabled) {
+            if (longest_term < time) {
                 longest_term = time;
             }
         }
-        if (is_combo_active) {
-            if (ALL_COMBO_KEYS_ARE_DOWN(combo->state, key_count)) { /* Combo was pressed */
-                /* Save the combo so we can fire it after COMBO_TERM */
+        if (ALL_COMBO_KEYS_ARE_DOWN(combo->state, key_count)) {
+            /* Combo was fully pressed */
+            /* Buffer the combo so we can fire it after COMBO_TERM */
 
-                /* Don't prepare this combo if its combo term has passed. */
-                if (timer && timer_elapsed(timer) > time) {
-                    combo->disabled = true;
-                } else {
+            /* Don't buffer this combo if its combo term has passed. */
+            if (timer && timer_elapsed(timer) > time) {
+                combo->disabled = true;
+            } else {
 
-                    // disable readied combos that overlap with this combo
-                    combo_t *drop = NULL;
-                    for (uint8_t combo_buffer_i = combo_buffer_read;
-                            combo_buffer_i != combo_buffer_write;
-                            INCREMENT_MOD(combo_buffer_i)) {
+                // disable readied combos that overlap with this combo
+                combo_t *drop = NULL;
+                for (uint8_t combo_buffer_i = combo_buffer_read;
+                        combo_buffer_i != combo_buffer_write;
+                        INCREMENT_MOD(combo_buffer_i)) {
 
-                        queued_combo *qcombo = &combo_buffer[combo_buffer_i];
-                        combo_t *buffered_combo = &key_combos[qcombo->combo_index];
+                    queued_combo_t *qcombo = &combo_buffer[combo_buffer_i];
+                    combo_t *buffered_combo = &key_combos[qcombo->combo_index];
 
-                        if ((drop = overlaps(buffered_combo, combo))) {
-                            drop->disabled = true;
-                            if (drop == combo) {
-                                // stop checking for overlaps if dropped combo was current combo.
-                                break;
-                            } else if (combo_buffer_i == combo_buffer_read && drop == buffered_combo) {
-                                /* Drop the disabled buffered combo from the buffer if
-                                 * it is in the beginning of the buffer. */
-                                INCREMENT_MOD(combo_buffer_read);
-                            }
+                    if ((drop = overlaps(buffered_combo, combo))) {
+                        drop->disabled = true;
+                        if (drop == combo) {
+                            // stop checking for overlaps if dropped combo was current combo.
+                            break;
+                        } else if (combo_buffer_i == combo_buffer_read && drop == buffered_combo) {
+                            /* Drop the disabled buffered combo from the buffer if
+                             * it is in the beginning of the buffer. */
+                            INCREMENT_MOD(combo_buffer_read);
                         }
-
                     }
 
-                    if (drop != combo) {
-                        // save this combo to buffer
-                        combo_buffer[combo_buffer_write] = (queued_combo){
-                            .combo_index=combo_index,
-                        };
-                        INCREMENT_MOD(combo_buffer_write);
-                    }
-                } // if timer elapsed end
+                }
 
-            }
+                if (drop != combo) {
+                    // save this combo to buffer
+                    combo_buffer[combo_buffer_write] = (queued_combo_t){
+                        .combo_index=combo_index,
+                    };
+                    INCREMENT_MOD(combo_buffer_write);
+                }
+            } // if timer elapsed end
+
         }
     } else {
         // chord releases
@@ -369,7 +347,7 @@ static bool process_single_combo(combo_t *combo, uint16_t keycode, keyrecord_t *
             if (combo->disabled || _get_combo_must_hold(combo_index, combo)) {
                 // combo wasn't tappable, disable it and drop it from buffer.
                 drop_combo_from_buffer(combo_index);
-                is_combo_active = false;
+                key_is_part_of_combo = false;
             }
         } else if (combo->active
                 && ONLY_ONE_KEY_IS_DOWN(combo->state)
@@ -377,26 +355,24 @@ static bool process_single_combo(combo_t *combo, uint16_t keycode, keyrecord_t *
                 ) {
             /* last key released */
             release_combo(combo_index, combo);
-            is_combo_active = true;
+            key_is_part_of_combo = true;
 
         } else if (combo->active
                 && KEY_NOT_YET_RELEASED(combo->state, key_index)
                 ) {
             /* first or middle key released */
-            is_combo_active = true;
+            key_is_part_of_combo = true;
 
         } else {
             /* The released key was part of an incomplete combo */
-            is_combo_active = false;
+            key_is_part_of_combo = false;
         }
 
         KEY_STATE_UP(combo->state, key_index);
     }
 
-    return is_combo_active;
+    return key_is_part_of_combo;
 }
-
-#define NO_COMBO_KEYS_ARE_DOWN (0 == combo->state)
 
 bool process_combo(uint16_t keycode, keyrecord_t *record) {
     bool is_combo_key          = false;
@@ -421,12 +397,7 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
         return true;
     }
 
-#ifndef COMBO_VARIABLE_LEN
-    for (uint16_t idx = 0; idx < COMBO_COUNT; ++idx)
-#else
-    for (uint16_t idx = 0; idx < COMBO_LEN; ++idx)
-#endif
-    {
+    for (uint16_t idx = 0; idx < COMBO_LEN; ++idx) {
         combo_t *combo = &key_combos[idx];
         is_combo_key |= process_single_combo(combo, keycode, record, idx);
         no_combo_keys_pressed = no_combo_keys_pressed && (NO_COMBO_KEYS_ARE_DOWN || combo->active || combo->disabled);
@@ -442,7 +413,7 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
         timer = timer_read();
 #endif
 
-        key_buffer[key_buffer_write] = (queued_record){
+        key_buffer[key_buffer_write] = (queued_record_t){
             .record = *record,
             .keycode = keycode,
             .combo_index = -1, // this will be set when applying combos
@@ -450,13 +421,13 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
         INCREMENT_MOD(key_buffer_write);
     } else {
         if (combo_buffer_read != combo_buffer_write) {
-            // some combo was prepared
+            // some combo is prepared
             apply_combos();
         } else {
             // reset state if there are no combo keys pressed at all
             dump_key_buffer();
             timer = 0;
-            clear_combos(true);
+            clear_combos();
         }
     }
     return !is_combo_key;
@@ -475,7 +446,7 @@ void matrix_scan_combo(void) {
         } else {
             dump_key_buffer();
             timer = 0;
-            clear_combos(true);
+            clear_combos();
         }
     }
 }
