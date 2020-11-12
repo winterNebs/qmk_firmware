@@ -83,6 +83,7 @@ static inline bool _get_combo_must_hold(uint16_t combo_index, combo_t *combo) {
 #elif defined(COMBO_MUST_HOLD_MODS)
         return KEYCODE_IS_MOD(combo->keycode);
 #endif
+    return false;
 }
 
 static inline uint16_t _get_combo_term(uint16_t combo_index, combo_t *combo) {
