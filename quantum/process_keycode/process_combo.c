@@ -37,7 +37,9 @@ __attribute__((weak)) bool get_combo_must_hold(uint16_t index, combo_t *combo) {
 __attribute__((weak)) uint16_t get_combo_term(uint16_t index, combo_t *combo) { return COMBO_TERM; }
 #endif
 
+#ifndef COMBO_NO_TIMER
 static uint16_t timer                 = 0;
+#endif
 static bool     b_combo_enable        = true;  // defaults to enabled
 static uint16_t longest_term          = 0;
 
@@ -83,10 +85,12 @@ static inline void release_combo(uint16_t combo_index, combo_t *combo) {
 }
 
 static inline bool _get_combo_must_hold(uint16_t combo_index, combo_t *combo) {
-#if defined(COMBO_MUST_HOLD_PER_COMBO)
-        return get_combo_must_hold(combo_index, combo);
+#ifdef COMBO_NO_TIMER
+    return false;
+#elif defined(COMBO_MUST_HOLD_PER_COMBO)
+    return get_combo_must_hold(combo_index, combo);
 #elif defined(COMBO_MUST_HOLD_MODS)
-        return KEYCODE_IS_MOD(combo->keycode);
+    return KEYCODE_IS_MOD(combo->keycode);
 #endif
     return false;
 }
@@ -308,10 +312,14 @@ static bool process_single_combo(combo_t *combo, uint16_t keycode, keyrecord_t *
             /* Combo was fully pressed */
             /* Buffer the combo so we can fire it after COMBO_TERM */
 
+#ifndef COMBO_NO_TIMER
             /* Don't buffer this combo if its combo term has passed. */
             if (timer && timer_elapsed(timer) > time) {
                 combo->disabled = true;
-            } else {
+                return true;
+            } else
+#endif
+            {
 
                 // disable readied combos that overlap with this combo
                 combo_t *drop = NULL;
@@ -410,13 +418,15 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
     }
 
     if (record->event.pressed && is_combo_key) {
-#ifdef COMBO_STRICT_TIMER
+#ifndef COMBO_NO_TIMER
+#   ifdef COMBO_STRICT_TIMER
         if (!timer) {
             // timer is set only on the first key
             timer = timer_read();
         }
-#else
+#   else
         timer = timer_read();
+#   endif
 #endif
 
         key_buffer[key_buffer_write] = (queued_record_t){
@@ -432,7 +442,9 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
         } else {
             // reset state if there are no combo keys pressed at all
             dump_key_buffer();
+#ifndef COMBO_NO_TIMER
             timer = 0;
+#endif
             clear_combos();
         }
     }
@@ -440,11 +452,12 @@ bool process_combo(uint16_t keycode, keyrecord_t *record) {
 }
 
 void matrix_scan_combo(void) {
-    if (!b_combo_enable || !timer) {
+    if (!b_combo_enable) {
         return;
     }
 
-    if (timer_elapsed(timer) > longest_term) {
+#ifndef COMBO_NO_TIMER
+    if (timer && timer_elapsed(timer) > longest_term) {
         if (combo_buffer_read != combo_buffer_write) {
             apply_combos();
             longest_term = 0;
@@ -455,13 +468,16 @@ void matrix_scan_combo(void) {
             clear_combos();
         }
     }
+#endif
 }
 
 void combo_enable(void) { b_combo_enable = true; }
 
 void combo_disable(void) {
-    b_combo_enable = false;
+#ifndef COMBO_NO_TIMER
     timer                      = 0;
+#endif
+    b_combo_enable = false;
     combo_buffer_read = combo_buffer_write;
     dump_key_buffer();
 }
