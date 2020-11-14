@@ -19,8 +19,13 @@
 #include "action_tapping.h"
 
 
+#ifdef COMBO_COUNT
+extern combo_t  key_combos[COMBO_COUNT];
+uint16_t COMBO_LEN = COMBO_COUNT;
+#else
 extern combo_t  key_combos[];
 extern uint16_t COMBO_LEN;
+#endif
 
 __attribute__((weak)) void process_combo_event(uint16_t combo_index, bool pressed) {}
 
