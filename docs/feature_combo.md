@@ -184,6 +184,26 @@ uint16_t COMBO_LEN = COMBO_LENGTH;
 ```
 Regardless of the method used to declare `COMBO_LEN`, this also requires to convert the `combo_t key_combos[COMBO_COUNT] = {...};` line to `combo_t key_combos[] = {...};`.
 
+
+## Combo timer
+
+Normally the timer is started on the first key press and then reset on every subsequent keypress inside `COMBO_TERM`.
+Inputting combos is relaxed like this, but also slightly more prone for accidental misfires.
+
+The next two options alter the behaviour of the timer.
+
+### `#define COMBO_STRICT_TIMER`
+
+With `COMBO_STRICT_TIMER` the timer is started only on the first key press.
+Inputting combos is now less relaxed; you need make sure the full chord is pressed inside `COMBO_TERM`.
+Misfires are less common but if you type multiple combos fast, there is a
+chance that the latter ones might not activate properly.
+
+### `#define COMBO_NO_TIMER`
+
+By defining `COMBO_NO_TIMER` the timer is disabled completely and combos are activated on the first key release.
+This also disables the "must hold" functionalities as they just wouldn't work at all.
+
 ## User callbacks
 
 In addition to the keycodes, there are a few functions that you can use to set the status, or check it:

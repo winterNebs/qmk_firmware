@@ -187,6 +187,10 @@ If you define these options you will enable the associated feature, which may in
   * Flag to enable per-combo COMBO_TERM extension and `get_combo_must_hold()` function
 * `#define COMBO_TERM_PER_COMBO`
   * Flag to enable per-combo COMBO_TERM extension and `get_combo_term()` function
+* `#define COMBO_STRICT_TIMER`
+  * Only start the combo timer on the first key press instead of on all key presses.
+* `#define COMBO_NO_TIMER`
+  * Disable the Combo functionality's timer complete for super relaxed combos.
 * `#define TAP_CODE_DELAY 100`
   * Sets the delay between `register_code` and `unregister_code`, if you're having issues with it registering properly (common on VUSB boards). The value is in milliseconds.
 * `#define TAP_HOLD_CAPS_DELAY 80`
