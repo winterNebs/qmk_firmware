@@ -218,38 +218,10 @@ In addition to the keycodes, there are a few functions that you can use to set t
 
 # Dictionary Management
 
-Having 3 places to update when adding new combos or altering old ones does become cumbersome when you have a lot of combos. We can alleviate this with some magic! ... If you consider C macros magic. Add the following `my_combos.h` file to your keymap directory or to you user space directory. Then include it in your `keymap.c` file.
+Having 3 places to update when adding new combos or altering old ones does become cumbersome when you have a lot of combos. We can alleviate this with some magic! ... If you consider C macros magic.
+First you need to add `VPATH += keyboards/gboards` to your `rules.mk`. Then include the file `keymap_combo.h` in your `keymap.c`.
 
-```c
-#pragma once
-#ifdef COMBO_ENABLE
-
-#ifdef COMB
-#undef COMB
-#endif
-
-#define COMB(name, action, ...)  ##name,
-enum myCombos {
-#include "combos.def"
-    COMBO_LENGTH
-};
-#undef COMB
-uint16_t COMBO_LEN = COMBO_LENGTH;
-
-#define COMB(name, action, ...)  const uint16_t PROGMEM name##_combo[] = {__VA_ARGS__, COMBO_END};
-#include "combos.def"
-#undef COMB
-
-#define COMB(name, action, ...)  [##name] = COMBO(name##_combo, action),
-combo_t key_combos[] = {
-#include "combos.def"
-};
-#undef COMB
-
-#endif
-```
-
-Then write you combos in `combos.def` (in the same directory as `my_combos.h`) file in the following manner:
+Then write your combos in `combos.def` file in the following manner:
 
 ```c
 //   name     result    chord keys
