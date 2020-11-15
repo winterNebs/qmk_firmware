@@ -13,7 +13,8 @@
 enum layers{
     _ALPHA = 0,   // default
     _LOWER,
-    _RAISE
+    _RAISE,
+    _ADJUST
 };
 enum custom_keycodes {
     ENDW  = SAFE_RANGE
@@ -77,6 +78,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     KC_END,  _______, KC_RGHT, _______, _______,   _______, _______, ENDW,    _______, _______,
     _______, _______, _______, _______, _______,   KC_UP,   KC_LEFT, _______, _______, _______,
     _______, _______, _______,      _______, _______, _______
+        ),
+
+/* Keymap 3: Pad/Function layer
+ * ,-----------------------------.          ,-----------------------------.
+ * | F1  | F2  | F3  | F4  | F5  |          | F6  | F7  | F8  | F9  | F10 |
+ * |-----+-----+-----+-----+-----|          |-----+-----+-----+-----+-----|
+ * | F11 |     |     |     |     |          |     |     |     |     | F12 | 
+ * |-----+-----+-----+-----+-----|	        |-----+-----+-----+-----+-----|
+ * |     |     |     |     |     |          |     |     |     |     |     |
+ * `-----------------------------'	        `-----------------------------'
+ *      		.-----------------.        .-----------------.   
+ *  			|     |    |      |		   |     |     |     |
+ *      		'-----------------'        '-----------------' 
+ */
+[_RAISE] = LAYOUT_gergoplex(
+    KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,     KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,
+    KC_F11,  _______, _______, _______, _______,   _______, _______, _______,    _______, KC_F12,
+    _______, _______, _______, _______, _______,   _______,   _______, _______, _______, _______,
+    _______, _______, _______,      _______, _______, _______
         )
 /* Keymap 2: Pad/Function layer
  * ,-----------------------------.          ,-----------------------------.
@@ -107,13 +127,8 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 /**
  * TODO:
  * Mouse keys?
- * Use combos?
- * Find better spot for esc key?
  * Game layer
  * move <> onto symbol layers?
  * replace < > with '"
- * need a delete key somewhere
- * change mod tap esttings  
  * replace q ? 
- * fkeys
  */
