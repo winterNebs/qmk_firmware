@@ -1,0 +1,4 @@
+// Gergoplex specfic combos 
+
+COMB(qesc,      KC_ESC,         KC_SPC, KC_Q)
+COMB(iqt,       KC_QUOT,        KC_BSPC, KC_I)
