@@ -1,3 +1,4 @@
+#include "keymap.h"
 // Gergoplex specfic combos 
 
 COMB(qesc,      KC_ESC,         KC_SPC, KC_Q)
