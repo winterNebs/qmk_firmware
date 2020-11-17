@@ -12,10 +12,10 @@
 
 enum layers{
     _ALPHA = 0,   // default
+    _GAME,
     _LOWER,
     _RAISE,
-    _ADJUST,
-    _GAME
+    _ADJUST
 };
 enum custom_keycodes {
     ENDW  = SAFE_RANGE
@@ -34,14 +34,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
      * |  Z  |  X  |  M  |  C  |  V  |        |  K  |  L  |  ,  |  .  |  /  |
      * `-----------------------------'        `-----------------------------'
      *   .---------------------------.        .------------------------.
-     *   |  ESC  | TAB/LOWER | SPACE |        | BKSP | ENT/RAISE | '   |
+     *   |  ALT  | TAB/LOWER | SPACE |        | BKSP | ENT/RAISE | '   |
      *   '---------------------------'        '------------------------'
      */
     [_ALPHA] = LAYOUT_gergoplex(
          KC_Q,  KC_D, KC_R, KC_W, KC_B,        KC_J, KC_F, KC_U, KC_P, KC_SCLN,
        HOME_A,HOME_S,HOME_H,HOME_T,KC_G,       KC_Y,HOME_N,HOME_E,HOME_O,HOME_I,
          KC_Z,  KC_X, KC_M, KC_C, KC_V,        KC_K, KC_L, KC_COMM, KC_DOT, KC_SLSH,
-            KC_ESC, LOWER, KC_SPC ,            KC_BSPC, RAISE, KC_QUOT ),
+            KC_LALT, LOWER, KC_SPC ,            KC_BSPC, RAISE, KC_QUOT ),
 
     /* Keymap 1: Lower layer
      *
@@ -149,6 +149,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
  }
 layer_state_t layer_state_set_user(layer_state_t state) {
   return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+} 
+bool get_ignore_mod_tap_interrupt(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case LOWER:
+            return false;
+        default:
+            return true;
+    }
+}
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+    switch (keycode) {
+        case HOME_A:
+        case HOME_S:
+        case HOME_O:
+        case HOME_I:
+            return TAPPING_TERM + 50;
+        default:
+            return TAPPING_TERM;
+    }
 }
 /**
  * TODO:
@@ -158,3 +177,4 @@ layer_state_t layer_state_set_user(layer_state_t state) {
  * replace < > with '"
  * replace q ? 
  */
+
