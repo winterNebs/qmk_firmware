@@ -1,3 +1,13 @@
+#pragma once
+#include QMK_KEYBOARD_H
+#if (!defined(LAYOUT) && defined(KEYMAP))
+#    define LAYOUT KEYMAP
+#endif
+
+   // clang-format off
+#define LAYOUT_gergoplex_wrapper(...)   LAYOUT_gergoplex(__VA_ARGS__)
+
+
 #define RAISE LT(_RAISE, KC_ENT)
 #define LOWER LT(_LOWER, KC_TAB)
 #define MOUSE TG(_MOUSE)
@@ -59,7 +69,7 @@ typedef enum {
 #define _________________SYMBOL_L3_________________         KC_EXLM, KC_HASH, KC_LCBR, KC_RCBR, KC_TILD 
 
 #define _________________SYMBOL_R1_________________         KC_6,    KC_7,    KC_8,    KC_9,    KC_0  
-#define _________________SYMBOL_R1_________________         KC_PIPE, KC_MINS, KC_EQL,  KC_UNDS, KC_ASTR
+#define _________________SYMBOL_R2_________________         KC_PIPE, KC_MINS, KC_EQL,  KC_UNDS, KC_ASTR
 #define _________________SYMBOL_R3_________________         KC_AMPR, KC_LBRC, KC_RBRC, KC_PERC, KC_CIRC 
 
 
@@ -90,13 +100,13 @@ typedef enum {
  * `-----------------------------'	        `-----------------------------'
  */
 
-#define _________________Adjust_L1_________________         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5
-#define _________________Adjust_L2_________________         KC_F11,  _______, _______, _______, _______ 
-#define _________________Adjust_L3_________________         _______, _______, _______, DF(_ALPHA), DF(_GAME)
+#define _________________ADJUST_L1_________________         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5
+#define _________________ADJUST_L2_________________         KC_F11,  _______, _______, _______, _______ 
+#define _________________ADJUST_L3_________________         _______, _______, _______, DF(_ALPHA), DF(_GAME)
 
-#define _________________Adjust_R1_________________         KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10
-#define _________________Adjust_R2_________________         _______, _______, _______, _______, KC_F12
-#define _________________Adjust_R3_________________         _______, _______, _______, _______, _______
+#define _________________ADJUST_R1_________________         KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10
+#define _________________ADJUST_R2_________________         _______, _______, _______, _______, KC_F12
+#define _________________ADJUST_R3_________________         _______, _______, _______, _______, _______
 
 /* Gaming layer right half (its qwerty but shifted over 1 row)
  *
@@ -109,8 +119,8 @@ typedef enum {
  * 	 `----------------------'
  */
 #define ______________GAME_R1_____________      KC_Y, KC_U, KC_I, KC_O 	  
-#define ______________GAME_R1_____________      KC_H, KC_J, KC_K, KC_L
-#define ______________GAME_R1_____________      KC_N, KC_M, KC_COMM, KC_P
+#define ______________GAME_R2_____________      KC_H, KC_J, KC_K, KC_L
+#define ______________GAME_R3_____________      KC_N, KC_M, KC_COMM, KC_P
 
 
 /* Mouse cluster 
