@@ -30,7 +30,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
          _________________WORKMAN_L1________________, _________________WORKMAN_R1________________,
          _________________WORKMAN_L2________________, _________________WORKMAN_R2________________,
          _________________WORKMAN_L3________________, _________________WORKMAN_R3________________,
-         KC_LALT, ____THUMB_L____,  ____THUMB_R____, MOUSE ),
+         KC_LALT, ____THUMB_L____,  ____THUMB_R____, KC_RALT ),
 
    /* Keymap 1: Lower layer
     *
@@ -47,7 +47,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     */
    [_LOWER] = LAYOUT_gergoplex_wrapper(
          _________________SYMBOL_L1_________________, _________________SYMBOL_R1_________________,
-         _________________SYMBOL_L2_________________, _________________SYMBOL_R3_________________,
+         _________________SYMBOL_L2_________________, _________________SYMBOL_R2_________________,
          _________________SYMBOL_L3_________________, _________________SYMBOL_R3_________________,
          KC_GRV,	_______, KC_PSCR, _______, _______, KC_BSLS),
 
@@ -126,6 +126,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
          KC_LCTL, _________________QWERTY_L3_________________, ______________GAME_R3_____________, 
          KC_LALT, MO(_LOWER), KC_SPC,		KC_BSPC, MO(_RAISE), KC_LSFT																// Rightk
          )
+
       /* Keymap 2: Pad/Function layer
        * ,-----------------------------.          ,-----------------------------.
        * |     |     |     |     |     |          |     |     |     |     |     |

@@ -25,7 +25,7 @@ enum layers{
     _LOWER,
     _RAISE,
     _ADJUST,
-    _MOUSE
+    _MOUSE,
 };
 
 typedef enum {
@@ -132,3 +132,18 @@ typedef enum {
  */
 #define _________MOUSE_1_________    KC_BTN1, KC_MS_U, KC_BTN2
 #define _________MOUSE_2_________    KC_MS_L, KC_MS_D, KC_MS_R
+
+/* Photoshop left side only keymap 
+ *
+ *  ,-----------------------------.
+ *  |  D  |  [  |  ]  | Flip| F1  | 
+ *  |-----+-----+-----+-----+-----|
+ *  |  L  |  R  |  E  |  B  |  G  | 
+ *  |-----+-----+-----+-----+-----|
+ *  |  Z  |  X  |  M  |  C  |  V  | 
+ * 	 `----------------------------'
+ */
+
+#define ______________PHOTOSHOP_L1________________       KC_D,    KC_LBRC,     KC_RBRC,     C(S(KC_F)),     C(S(KC_N))
+#define ______________PHOTOSHOP_L2________________       KC_L,    ALT_T(KC_R), CTL_T(KC_E), SFT_T(KC_B),   KC_G
+#define ______________PHOTOSHOP_L3________________       KC_Z,    KC_X,    KC_M,   KC_C,     KC_V
