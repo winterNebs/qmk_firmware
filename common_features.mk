@@ -17,6 +17,8 @@ SERIAL_PATH := $(QUANTUM_PATH)/serial_link
 
 QUANTUM_SRC += \
     $(QUANTUM_DIR)/quantum.c \
+    $(QUANTUM_DIR)/send_string.c \
+    $(QUANTUM_DIR)/bitwise.c \
     $(QUANTUM_DIR)/led.c \
     $(QUANTUM_DIR)/keymap_common.c \
     $(QUANTUM_DIR)/keycode_config.c
@@ -24,6 +26,8 @@ QUANTUM_SRC += \
 ifeq ($(strip $(DEBUG_MATRIX_SCAN_RATE_ENABLE)), yes)
     OPT_DEFS += -DDEBUG_MATRIX_SCAN_RATE
     CONSOLE_ENABLE = yes
+else ifeq ($(strip $(DEBUG_MATRIX_SCAN_RATE_ENABLE)), api)
+    OPT_DEFS += -DDEBUG_MATRIX_SCAN_RATE
 endif
 
 ifeq ($(strip $(API_SYSEX_ENABLE)), yes)
@@ -34,12 +38,36 @@ ifeq ($(strip $(API_SYSEX_ENABLE)), yes)
     SRC += $(QUANTUM_DIR)/api.c
 endif
 
+ifeq ($(strip $(COMMAND_ENABLE)), yes)
+    SRC += $(QUANTUM_DIR)/command.c
+    OPT_DEFS += -DCOMMAND_ENABLE
+endif
+
+AUDIO_ENABLE ?= no
 ifeq ($(strip $(AUDIO_ENABLE)), yes)
+    ifeq ($(PLATFORM),CHIBIOS)
+        AUDIO_DRIVER ?= dac_basic
+        ifeq ($(strip $(AUDIO_DRIVER)), dac_basic)
+            OPT_DEFS += -DAUDIO_DRIVER_DAC
+        else ifeq ($(strip $(AUDIO_DRIVER)), dac_additive)
+            OPT_DEFS += -DAUDIO_DRIVER_DAC
+        ## stm32f2 and above have a usable DAC unit, f1 do not, and need to use pwm instead
+        else ifeq ($(strip $(AUDIO_DRIVER)), pwm_software)
+            OPT_DEFS += -DAUDIO_DRIVER_PWM
+        else ifeq ($(strip $(AUDIO_DRIVER)), pwm_hardware)
+            OPT_DEFS += -DAUDIO_DRIVER_PWM
+        endif
+    else
+        # fallback for all other platforms is pwm
+        AUDIO_DRIVER ?= pwm_hardware
+        OPT_DEFS += -DAUDIO_DRIVER_PWM
+    endif
     OPT_DEFS += -DAUDIO_ENABLE
     MUSIC_ENABLE = yes
     SRC += $(QUANTUM_DIR)/process_keycode/process_audio.c
     SRC += $(QUANTUM_DIR)/process_keycode/process_clicky.c
-    SRC += $(QUANTUM_DIR)/audio/audio_$(PLATFORM_KEY).c
+    SRC += $(QUANTUM_DIR)/audio/audio.c ## common audio code, hardware agnostic
+    SRC += $(QUANTUM_DIR)/audio/driver_$(PLATFORM_KEY)_$(strip $(AUDIO_DRIVER)).c
     SRC += $(QUANTUM_DIR)/audio/voices.c
     SRC += $(QUANTUM_DIR)/audio/luts.c
 endif
@@ -72,9 +100,10 @@ ifeq ($(strip $(VIRTSER_ENABLE)), yes)
     OPT_DEFS += -DVIRTSER_ENABLE
 endif
 
-ifeq ($(strip $(FAUXCLICKY_ENABLE)), yes)
-    OPT_DEFS += -DFAUXCLICKY_ENABLE
-    SRC += $(QUANTUM_DIR)/fauxclicky.c
+ifeq ($(strip $(MOUSEKEY_ENABLE)), yes)
+    OPT_DEFS += -DMOUSEKEY_ENABLE
+    OPT_DEFS += -DMOUSE_ENABLE
+    SRC += $(QUANTUM_DIR)/mousekey.c
 endif
 
 ifeq ($(strip $(POINTING_DEVICE_ENABLE)), yes)
@@ -133,7 +162,7 @@ else
         # This ensures that the EEPROM page buffer fits into RAM
         USE_PROCESS_STACKSIZE = 0x600
         USE_EXCEPTIONS_STACKSIZE = 0x300
-        
+
         SRC += $(PLATFORM_COMMON_DIR)/eeprom_stm32.c
         SRC += $(PLATFORM_COMMON_DIR)/flash_stm32.c
         OPT_DEFS += -DEEPROM_EMU_STM32F042x6
@@ -188,7 +217,6 @@ ifeq ($(strip $(RGBLIGHT_ENABLE)), yes)
     endif
 endif
 
-
 LED_MATRIX_ENABLE ?= no
 VALID_LED_MATRIX_TYPES := IS31FL3731 custom
 # TODO: IS31FL3733 IS31FL3737 IS31FL3741
@@ -220,7 +248,7 @@ ifeq ($(strip $(RGB_MATRIX_ENABLE)), yes)
         $(error "$(RGB_MATRIX_DRIVER)" is not a valid matrix type)
     endif
     OPT_DEFS += -DRGB_MATRIX_ENABLE
-ifneq (,$(filter $(MCU), atmega16u2 atmega32u2))
+ifneq (,$(filter $(MCU), atmega16u2 atmega32u2 at90usb162))
     # ATmegaxxU2 does not have hardware MUL instruction - lib8tion must be told to use software multiplication routines
     OPT_DEFS += -DLIB8_ATTINY
 endif
@@ -481,7 +509,7 @@ ifeq ($(strip $(SPLIT_KEYBOARD)), yes)
 
     # Determine which (if any) transport files are required
     ifneq ($(strip $(SPLIT_TRANSPORT)), custom)
-        QUANTUM_SRC += $(QUANTUM_DIR)/split_common/transport.c
+        QUANTUM_LIB_SRC += $(QUANTUM_DIR)/split_common/transport.c
         # Functions added via QUANTUM_LIB_SRC are only included in the final binary if they're called.
         # Unused functions are pruned away, which is why we can add multiple drivers here without bloat.
         ifeq ($(PLATFORM),AVR)
@@ -621,4 +649,28 @@ endif
 
 ifeq ($(strip $(JOYSTICK_ENABLE)), digital)
     OPT_DEFS += -DDIGITAL_JOYSTICK_ENABLE
+endif
+
+USBPD_ENABLE ?= no
+VALID_USBPD_DRIVER_TYPES = custom vendor
+USBPD_DRIVER ?= vendor
+ifeq ($(strip $(USBPD_ENABLE)), yes)
+    ifeq ($(filter $(strip $(USBPD_DRIVER)),$(VALID_USBPD_DRIVER_TYPES)),)
+        $(error USBPD_DRIVER="$(USBPD_DRIVER)" is not a valid USBPD driver)
+    else
+        OPT_DEFS += -DUSBPD_ENABLE
+        ifeq ($(strip $(USBPD_DRIVER)), vendor)
+            # Vendor-specific implementations
+            OPT_DEFS += -DUSBPD_VENDOR
+            ifeq ($(strip $(MCU_SERIES)), STM32G4xx)
+                OPT_DEFS += -DUSBPD_STM32G4
+                SRC += usbpd_stm32g4.c
+            else
+                $(error There is no vendor-provided USBPD driver available)
+            endif
+        else ifeq ($(strip $(USBPD_DRIVER)), custom)
+            OPT_DEFS += -DUSBPD_CUSTOM
+            # Board designers can add their own driver to $(SRC)
+        endif
+    endif
 endif

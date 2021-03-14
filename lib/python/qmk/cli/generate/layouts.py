@@ -25,7 +25,7 @@ def generate_layouts(cli):
     """
     # Determine our keyboard(s)
     if not cli.config.generate_layouts.keyboard:
-        cli.log.error('Missing paramater: --keyboard')
+        cli.log.error('Missing parameter: --keyboard')
         cli.subcommands['info'].print_help()
         return False
 
@@ -82,13 +82,17 @@ def generate_layouts(cli):
         layouts_h_lines.append(rows)
         layouts_h_lines.append('}')
 
+    for alias, target in kb_info_json.get('layout_aliases', {}).items():
+        layouts_h_lines.append('')
+        layouts_h_lines.append('#define %s %s' % (alias, target))
+
     # Show the results
     layouts_h = '\n'.join(layouts_h_lines) + '\n'
 
     if cli.args.output:
         cli.args.output.parent.mkdir(parents=True, exist_ok=True)
         if cli.args.output.exists():
-            cli.args.output.replace(cli.args.output.name + '.bak')
+            cli.args.output.replace(cli.args.output.parent / (cli.args.output.name + '.bak'))
         cli.args.output.write_text(layouts_h)
 
         if not cli.args.quiet:

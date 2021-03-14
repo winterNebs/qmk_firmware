@@ -209,7 +209,7 @@ SEND_STRING(".."SS_TAP(X_END));
 
 There are some functions you may find useful in macro-writing. Keep in mind that while you can write some fairly advanced code within a macro, if your functionality gets too complex you may want to define a custom keycode instead. Macros are meant to be simple.
 
-?> You can also use the functions described in [Useful functions](ref_functions.md) for additional functionality. For example `reset_keyboard()` allows you to reset the keyboard as part of a macro.
+?> You can also use the functions described in [Useful function](ref_functions.md) and [Checking modifier state](feature_advanced_keycodes#checking-modifier-state) for additional functionality. For example, `reset_keyboard()` allows you to reset the keyboard as part of a macro and `get_mods() & MOD_MASK_SHIFT` lets you check for the existence of active shift modifiers.
 
 ### `record->event.pressed`
 
@@ -233,9 +233,15 @@ Parallel to `register_code` function, this sends the `<kc>` keyup event to the c
 
 ### `tap_code(<kc>);`
 
-This will send `register_code(<kc>)` and then `unregister_code(<kc>)`. This is useful if you want to send both the press and release events ("tap" the key, rather than hold it).
+Sends `register_code(<kc>)` and then `unregister_code(<kc>)`. This is useful if you want to send both the press and release events ("tap" the key, rather than hold it).
 
-If you're having issues with taps (un)registering, you can add a delay between the register and unregister events by setting `#define TAP_CODE_DELAY 100` in your `config.h` file. The value is in milliseconds.
+If `TAP_CODE_DELAY` is defined (default 0), this function waits that many milliseconds before calling `unregister_code(<kc>)`. This can be useful when you are having issues with taps (un)registering.
+
+If the keycode is `KC_CAPS`, it waits `TAP_HOLD_CAPS_DELAY` milliseconds instead (default 80), as macOS prevents accidental Caps Lock activation by waiting for the key to be held for a certain amount of time.
+
+### `tap_code_delay(<kc>, <delay>);`
+
+Like `tap_code(<kc>)`, but with a `delay` parameter for specifying arbitrary intervals before sending the unregister event.
 
 ### `register_code16(<kc>);`, `unregister_code16(<kc>);` and `tap_code16(<kc>);`
 

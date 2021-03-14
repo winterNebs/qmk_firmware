@@ -15,8 +15,7 @@
  */
 
 #include QMK_KEYBOARD_H
-
-
+extern keymap_config_t keymap_config;
 enum planck_layers {
   _QWERTY,
   _WORKMAN,

@@ -75,9 +75,6 @@
  * MIDI options
  */
 
-/* Prevent use of disabled MIDI features in the keymap */
-//#define MIDI_ENABLE_STRICT 1
-
 /* enable basic MIDI features:
    - MIDI notes can be sent when in Music mode is on
 */
@@ -106,9 +103,12 @@
 // 0b1110101 AD <-> SCL
 // 0b1110110 AD <-> SDA
 #define LED_DRIVER_ADDR_1 0b1110100
-#define I2C1_BANK GPIOB
 #define I2C1_SCL 8
 #define I2C1_SDA 9
 
 #define LED_DRIVER_COUNT 1
-#define LED_DRIVER_LED_COUNT 71
+#define DRIVER_LED_TOTAL 71
+
+#define AUDIO_PIN A5
+#define AUDIO_PIN_ALT A4
+#define AUDIO_PIN_ALT_AS_NEGATIVE

@@ -5,6 +5,8 @@
 
 #pragma once
 
+#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP TRUE
+
 /* USB Device descriptor parameter */
 #define VENDOR_ID  0x4D58   // MX
 #define PRODUCT_ID 0x20AD   // 8XV2.0 Additional
@@ -80,7 +82,6 @@
 #define DEBOUNCE    5
 
 // i2c setting
-#define USE_I2CV1
 #define I2C1_SCL 8
 #define I2C1_SDA 9
 #define I2C1_CLOCK_SPEED 400000
@@ -94,5 +95,3 @@
 #define DRIVER_ADDR_1 0b1110100
 #define DRIVER_COUNT 1
 #define DRIVER_LED_TOTAL RGBLED_NUM
-
-#define EARLY_INIT_PERFORM_BOOTLOADER_JUMP FALSE    // disable jump to system bootloader

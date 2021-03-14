@@ -97,7 +97,7 @@ MAIN_KEYMAP_PATH_4 := $(KEYBOARD_PATH_4)/keymaps/$(KEYMAP)
 MAIN_KEYMAP_PATH_5 := $(KEYBOARD_PATH_5)/keymaps/$(KEYMAP)
 
 # Pull in rules from info.json
-INFO_RULES_MK = $(shell bin/qmk generate-rules-mk --quiet --keyboard $(KEYBOARD) --output $(KEYBOARD_OUTPUT)/src/rules.mk)
+INFO_RULES_MK = $(shell bin/qmk generate-rules-mk --quiet --escape --keyboard $(KEYBOARD) --output $(KEYBOARD_OUTPUT)/src/rules.mk)
 include $(INFO_RULES_MK)
 
 # Check for keymap.json first, so we can regenerate keymap.c
@@ -313,6 +313,12 @@ USER_PATH := users/$(USER_NAME)
 ifneq ("$(wildcard $(USER_PATH)/config.h)","")
     CONFIG_H += $(USER_PATH)/config.h
 endif
+ifneq ("$(wildcard $(USER_PATH)/post_config.h)","")
+    POST_CONFIG_H += $(USER_PATH)/post_config.h
+endif
+
+# Disable features that a keyboard doesn't support
+-include disable_features.mk
 
 # Object files directory
 #     To put object files in current directory, use a dot (.), do NOT make
@@ -379,7 +385,7 @@ ALL_CONFIGS := $(PROJECT_CONFIG) $(CONFIG_H)
 OUTPUTS := $(KEYMAP_OUTPUT) $(KEYBOARD_OUTPUT)
 $(KEYMAP_OUTPUT)_SRC := $(SRC)
 $(KEYMAP_OUTPUT)_DEFS := $(OPT_DEFS) $(GFXDEFS) \
--DQMK_KEYBOARD=\"$(KEYBOARD)\" -DQMK_KEYBOARD_H=\"$(QMK_KEYBOARD_H)\" -DQMK_KEYBOARD_CONFIG_H=\"$(KEYBOARD_PATH_1)/config.h\" \
+-DQMK_KEYBOARD=\"$(KEYBOARD)\" -DQMK_KEYBOARD_H=\"$(QMK_KEYBOARD_H)\" \
 -DQMK_KEYMAP=\"$(KEYMAP)\" -DQMK_KEYMAP_H=\"$(KEYMAP).h\" -DQMK_KEYMAP_CONFIG_H=\"$(KEYMAP_PATH)/config.h\" \
 -DQMK_SUBPROJECT -DQMK_SUBPROJECT_H -DQMK_SUBPROJECT_CONFIG_H
 $(KEYMAP_OUTPUT)_INC :=  $(VPATH) $(EXTRAINCDIRS)

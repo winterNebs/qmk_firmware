@@ -46,7 +46,7 @@ def find_layouts(file):
     parsed_layouts = {}
 
     # Search the file for LAYOUT macros and aliases
-    file_contents = file.read_text()
+    file_contents = file.read_text(encoding='utf-8')
     file_contents = comment_remover(file_contents)
     file_contents = file_contents.replace('\\\n', '')
 
@@ -67,8 +67,10 @@ def find_layouts(file):
             layout = layout.strip()
             parsed_layout = [_default_key(key) for key in layout.split(',')]
 
-            for key in parsed_layout:
-                if key['label'] in matrix_locations:
+            for i, key in enumerate(parsed_layout):
+                if 'label' not in key:
+                    cli.log.error('Invalid LAYOUT macro in %s: Empty parameter name in macro %s at pos %s.', file, macro_name, i)
+                elif key['label'] in matrix_locations:
                     key['matrix'] = matrix_locations[key['label']]
 
             parsed_layouts[macro_name] = {
@@ -85,12 +87,7 @@ def find_layouts(file):
             except ValueError:
                 continue
 
-    # Populate our aliases
-    for alias, text in aliases.items():
-        if text in parsed_layouts and 'KEYMAP' not in alias:
-            parsed_layouts[alias] = parsed_layouts[text]
-
-    return parsed_layouts
+    return parsed_layouts, aliases
 
 
 def parse_config_h_file(config_h_file, config_h=None):
@@ -102,7 +99,7 @@ def parse_config_h_file(config_h_file, config_h=None):
     config_h_file = Path(config_h_file)
 
     if config_h_file.exists():
-        config_h_text = config_h_file.read_text()
+        config_h_text = config_h_file.read_text(encoding='utf-8')
         config_h_text = config_h_text.replace('\\\n', '')
         config_h_text = strip_multiline_comment(config_h_text)
 
