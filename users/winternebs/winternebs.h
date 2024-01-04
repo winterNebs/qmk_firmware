@@ -15,9 +15,9 @@
 #define MOUSE TG(_MOUSE)
 #define HOME_A GUI_T(KC_A)
 #define HOME_S ALT_T(KC_S)
-#define HOME_H CTL_T(KC_H) 
-#define HOME_T SFT_T(KC_T) 
-#define HOME_N RSFT_T(KC_N) 
+#define HOME_H CTL_T(KC_H)
+#define HOME_T SFT_T(KC_T)
+#define HOME_N RSFT_T(KC_N)
 #define HOME_E RCTL_T(KC_E)
 #define HOME_O RALT_T(KC_O)
 #define HOME_I RGUI_T(KC_I)
@@ -27,6 +27,7 @@ enum layers{
     _LOWER,
     _RAISE,
     _ADJUST,
+    _OSRS,
     _MOUSE,
 };
 
@@ -39,7 +40,7 @@ typedef enum {
 // stolen from drashna
 #define _________________QWERTY_L1_________________        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T
 #define _________________QWERTY_L2_________________        KC_A,    KC_S,    KC_D,    KC_F,    KC_G
-#define _________________QWERTY_L3_________________        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B 
+#define _________________QWERTY_L3_________________        KC_Z,    KC_X,    KC_C,    KC_V,    KC_B
 
 #define _________________QWERTY_R1_________________        KC_Y,    KC_U,    KC_I,    KC_O,    KC_P
 #define _________________QWERTY_R2_________________        KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN
@@ -54,7 +55,7 @@ typedef enum {
 #define _________________WORKMAN_R3________________       KC_K,    KC_L,    KC_COMM, KC_DOT,  KC_SLASH
 
 #define ____THUMB_L____ LOWER,   KC_SPC
-#define ____THUMB_R____ KC_BSPC, RAISE 
+#define ____THUMB_R____ KC_BSPC, RAISE
 
 
 /* Lower layer
@@ -68,12 +69,12 @@ typedef enum {
  * `-----------------------------'        `-----------------------------'
  */
 #define _________________SYMBOL_L1_________________         KC_1,    KC_2,    KC_3,    KC_4,    KC_5
-#define _________________SYMBOL_L2_________________         KC_DLR,  KC_PLUS, KC_LPRN, KC_RPRN, KC_AT   
-#define _________________SYMBOL_L3_________________         KC_EXLM, KC_HASH, KC_LCBR, KC_RCBR, KC_TILD 
+#define _________________SYMBOL_L2_________________         KC_DLR,  KC_PLUS, KC_LPRN, KC_RPRN, KC_AT
+#define _________________SYMBOL_L3_________________         KC_EXLM, KC_HASH, KC_LCBR, KC_RCBR, KC_TILD
 
-#define _________________SYMBOL_R1_________________         KC_6,    KC_7,    KC_8,    KC_9,    KC_0  
+#define _________________SYMBOL_R1_________________         KC_6,    KC_7,    KC_8,    KC_9,    KC_0
 #define _________________SYMBOL_R2_________________         KC_PIPE, KC_MINS, KC_EQL,  KC_UNDS, KC_ASTR
-#define _________________SYMBOL_R3_________________         KC_AMPR, KC_LBRC, KC_RBRC, KC_PERC, KC_CIRC 
+#define _________________SYMBOL_R3_________________         KC_AMPR, KC_LBRC, KC_RBRC, KC_PERC, KC_CIRC
 
 
 /* Raise/nav
@@ -86,26 +87,26 @@ typedef enum {
  * `-----------------------------'	        `-----------------------------'
  */
 #define _________________NAV_L1____________________         _______, _______, _______, C(KC_RGHT), C(KC_LEFT)
-#define _________________NAV_L2____________________         KC_END,  _______, KC_LEFT, _______, _______ 
-#define _________________NAV_L3____________________         _______, _______, _______, _______, _______            
+#define _________________NAV_L2____________________         KC_END,  _______, KC_LEFT, _______, _______
+#define _________________NAV_L3____________________         _______, _______, _______, _______, _______
 
 #define _________________NAV_R1____________________         KC_DOWN, _______, _______, _______, KC_HOME
 #define _________________NAV_R2____________________         _______, _______, ENDW,    _______, _______
 #define _________________NAV_R3____________________         KC_UP,   KC_RGHT, _______, _______, _______
 
-/* Adjust/whatever  
+/* Adjust/whatever
  * ,-----------------------------.          ,-----------------------------.
  * | F1  | F2  | F3  | F4  | F5  |          | F6  | F7  | F8  | F9  | F10 |
  * |-----+-----+-----+-----+-----|          |-----+-----+-----+-----+-----|
- * | F11 |     |     |     |     |          |     |     |     |     | F12 | 
+ * | F11 |     |     |     |     |          |     |     |     |     | F12 |
  * |-----+-----+-----+-----+-----|	        |-----+-----+-----+-----+-----|
- * |     |     |     | Wrk | Gm  |          |     |     |     |     |     |
+ * |     |     | OSRS| Wrk | Gm  |          |     |     |     |     |     |
  * `-----------------------------'	        `-----------------------------'
  */
 
 #define _________________ADJUST_L1_________________         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5
-#define _________________ADJUST_L2_________________         KC_F11,  _______, _______, _______, _______ 
-#define _________________ADJUST_L3_________________         _______, _______, _______, DF(_ALPHA), DF(_GAME)
+#define _________________ADJUST_L2_________________         KC_F11,  _______, _______, _______, _______
+#define _________________ADJUST_L3_________________         _______, _______, DF(_OSRS), DF(_ALPHA), DF(_GAME)
 
 #define _________________ADJUST_R1_________________         KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10
 #define _________________ADJUST_R2_________________         _______, _______, _______, _______, KC_F12
@@ -116,17 +117,17 @@ typedef enum {
  *  ,-----------------------.
  *  |  Y  |  U  |  I  |  O  |
  *  |-----------------------|
- *  |  H  |  J  |  K  |  L  | 
+ *  |  H  |  J  |  K  |  L  |
  *  |-----------------------|
- *  |  N  |  M  |  <  | ALT | 
+ *  |  N  |  M  |  <  | ALT |
  * 	 `----------------------'
  */
-#define ______________GAME_R1_____________      KC_Y, KC_U, KC_I, KC_O 	  
+#define ______________GAME_R1_____________      KC_Y, KC_U, KC_I, KC_O
 #define ______________GAME_R2_____________      KC_H, KC_J, KC_K, KC_L
 #define ______________GAME_R3_____________      KC_N, KC_M, KC_COMM, KC_LALT
 
 
-/* Mouse cluster 
+/* Mouse cluster
  *  ,-----------------.
  *  | LMB |  ^  | RMB |
  *  |-----+-----+-----|
@@ -136,17 +137,37 @@ typedef enum {
 #define _________MOUSE_1_________    KC_BTN1, KC_MS_U, KC_BTN2
 #define _________MOUSE_2_________    KC_MS_L, KC_MS_D, KC_MS_R
 
-/* Photoshop left side only keymap 
+/* Photoshop left side only keymap
  *
  *  ,-----------------------------.
- *  |  D  |  [  |  ]  | Flip| F1  | 
+ *  |  D  |  [  |  ]  | Flip| F1  |
  *  |-----+-----+-----+-----+-----|
- *  |  L  |  R  |  E  |  B  |  G  | 
+ *  |  L  |  R  |  E  |  B  |  G  |
  *  |-----+-----+-----+-----+-----|
- *  |  Z  |  X  |  M  |  C  |  V  | 
+ *  |  Z  |  X  |  M  |  C  |  V  |
  * 	 `----------------------------'
  */
 
 #define ______________PHOTOSHOP_L1________________       KC_D,    KC_LBRC,     KC_RBRC,     C(S(KC_F)),     C(S(KC_N))
 #define ______________PHOTOSHOP_L2________________       KC_L,    ALT_T(KC_R), CTL_T(KC_E), SFT_T(KC_B),   KC_G
 #define ______________PHOTOSHOP_L3________________       KC_Z,    KC_X,    KC_M,   KC_C,     KC_V
+
+/* Photoshop left side only keymap
+ *
+ *  ,-----------------------------.
+ *  |     |     |     |     |     |
+ *  |-----+-----+-----+-----+-----|
+ *  |     |     |     |     |     |
+ *  |-----+-----+-----+-----+-----|
+ *  |     |     |     |     |     |
+ * 	 `----------------------------'
+ */
+
+// mouse keys
+// 8: up
+// 5: click
+// 2: down
+// 5: click
+#define _________________OSRS_L1_________________         _______, _______, _______, _______, _______
+#define _________________OSRS_L2_________________         KC_NLCK, KC_SPC, KC_1,    KC_6,    _______
+#define _________________OSRS_L3_________________         KC_KP_5, KC_KP_2, KC_KP_5, KC_KP_8, _______
