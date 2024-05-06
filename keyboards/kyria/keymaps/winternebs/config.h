@@ -15,29 +15,16 @@
  */
 #pragma once
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
 #define OLED_FONT_H "keyboards/kyria/keymaps/winternebs/glcdfont.c"
-=======
-#define OLED_FONT_H "keyboards/kyria/keymaps/winterNebs/glcdfont.c"
->>>>>>> Rename to lowercase
-=======
-#define OLED_FONT_H "keyboards/kyria/keymaps/winternebs/glcdfont.c"
->>>>>>> fix oled path
-=======
-#define OLED_FONT_H "keyboards/kyria/keymaps/winternebs/glcdfont.c"
->>>>>>> b02d6a4300ef26ff580e2c4ab6284a529ea0bc10
-#define OLED_FONT_END 127
+#define OLED_FONT_END 0
+#define OLED_FONT_START 0
+#define OLED_FONT_WIDTH 1
 #ifdef OLED_DRIVER_ENABLE
   #define OLED_DISPLAY_128X64
 #endif
 
-#define FORCE_NKRO
 #define ENCODER_RESOLUTION 4
 
 #define NO_ACTION_MACRO
 #define NO_ACTION_FUNCTION
 #define NO_ACTION_ONESHOT
-#define TAPPING_FORCE_HOLD
-#define IGNORE_MOD_TAP_INTERRUPT

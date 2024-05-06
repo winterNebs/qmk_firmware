@@ -14,59 +14,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include QMK_KEYBOARD_H
-//#include "winternebs.h"
+#include "winternebs.h"
 // clang-format off
 
 #ifdef CONSOLE_ENABLE
 	#include <print.h>
 #endif
-enum custom_keycodes {
-  QWERTY = SAFE_RANGE,
-  WORKMAN,
-  ADJUST,
-  SBKSP,
-  ENDW
-};
-
-enum layers {
-	_QWERTY = 0,
-	_WORKMAN,
-	_LOWER,
-	_RAISE,
-	_ADJUST
-};
-#define RAISE LT(_RAISE, KC_ENT)
-#define LOWER MO(_LOWER)
-#define HOME_A KC_A
-#define HOME_S KC_S
-#define HOME_H CTL_T(KC_H)
-#define HOME_T SFT_T(KC_T)
-#define HOME_N SFT_T(KC_N)
-#define HOME_E CTL_T(KC_E)
-#define HOME_O KC_O
-#define HOME_I KC_I
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-/*
- * Base Layer: QWERTY
- *
- * ,-------------------------------------------.                              ,-------------------------------------------.
- * |   ESC  |   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |        |
- * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
- * |   TAB  |   A  |   S  |   D  |   F  |   G  |                              |   H  |   J  |   K  |   L  |   ;  |    '   |
- * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
- * |  CTRL  |   Z  |   X  |   C  |   V  |   B  |      |      |  |      |      |   N  |   M  |   ,  |   .  |   /  |  ENTER |
- * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
- *                        | GUI  |  ALT | LOWER| Space|      |  | SHIFT| Bksp | RAISE|      |      |
- *                        `----------------------------------'  `----------------------------------'
- */
-	[_QWERTY] = LAYOUT(
-	KC_ESC,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,                                          KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    _______,
-	KC_TAB,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,                                          KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
-	KC_LCTL, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B, _______, _______,     _______, _______,  KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ENT,
-							   KC_LGUI, KC_LALT, LOWER, KC_SPC, _______,     KC_LSFT, KC_BSPC, RAISE, _______, _______
-	),
 	/*
- * Workman Layer
+ * Base Layer: Alpha (close enough seee user file im not updating this)
  *
  * ,-------------------------------------------.                              ,-------------------------------------------.
  * |   ESC  |   Q  |   D  |   R  |   W  |   B  |                              |   J  |   F  |   U  |   P  |   ;  |  Bksp  |
@@ -78,11 +34,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                        |  GUI |  ESC | LOWER| Space| SWAP |  | SWAP | Bksp | RAISE|      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
-	[_WORKMAN] = LAYOUT(
-	KC_ESC, KC_Q,    KC_D,    KC_R,    KC_W,    KC_B,                                          KC_J,    KC_F,    KC_U,    KC_P,    KC_SCLN, KC_BSPC,
-	KC_TAB, HOME_A,  HOME_S,  HOME_H,  HOME_T,  KC_G,                                          KC_Y,    HOME_N,  HOME_E,  HOME_O,  HOME_I,  KC_QUOT,
-    XXXXXXX, KC_Z,    KC_X,    KC_M,    KC_C,    KC_V,  KC_LSFT, KC_SPC,     SH_MON, KC_ENT,    KC_K,    KC_L,    KC_COMM, KC_DOT,  KC_SLSH, XXXXXXX,
-							   KC_LGUI, KC_LALT,  LOWER, KC_SPC,  SH_MON,     SH_MON, KC_BSPC,   RAISE,   XXXXXXX, _______
+	[_ALPHA] = LAYOUT_ferris_wrapper(
+	KC_ESC,  _________________WORKMAN_L1________________,                                           _________________WORKMAN_R1________________, KC_DEL,
+	KC_TAB,  _________________WORKMAN_L2________________,                                          _________________WORKMAN_R2________________, KC_QUOT,
+	KC_LCTL, _________________WORKMAN_L3________________, _______, _______,     _______, _______,  _________________WORKMAN_R3________________, KC_ENT,
+							   KC_LGUI, KC_LALT, ____THUMB_L____, _______,     KC_LSFT, ____THUMB_R____, _______, _______
 	),
 /*
  * Lower Layer: NUM/symb
@@ -97,11 +53,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                        |prints|      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
-	[_LOWER] = LAYOUT(
-	KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,                                            KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
-	KC_DEL,  KC_DLR,  KC_PLUS, KC_LPRN, KC_RPRN, KC_AT,                                           KC_PIPE, KC_MINS, KC_EQL,  KC_UNDS, KC_ASTR, KC_BSLS,
-	_______, KC_EXLM, KC_HASH, KC_LCBR, KC_RCBR, KC_TILD, _______, _______,     _______, _______, KC_AMPR, KC_LBRC, KC_RBRC, KC_PERC, KC_CIRC, _______,
-							   KC_PSCR, _______, _______, _______, _______,     _______, KC_BSPC, _______, _______, _______
+	[_LOWER] = LAYOUT_ferris_wrapper(
+	KC_GRV,  _________________SYMBOL_L1_________________,                                         _________________SYMBOL_R1_________________, _______,
+	KC_DEL,  _________________SYMBOL_L2_________________,                                         _________________SYMBOL_R2_________________, KC_BSLS,
+	_______, _________________SYMBOL_L3_________________, _______, _______,     _______, _______, _________________SYMBOL_R3_________________, _______,
+							   _______, _______, _______, KC_PSCR, _______,     _______, _______, _______, _______, _______
 	),
  /*
   * Raise Layer: VIM Movement
@@ -117,11 +73,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   *                        |      |      |      |      |      |  |      |      |      |      |      |
   *                        `----------------------------------'  `----------------------------------'
   */
-	 [_RAISE] = LAYOUT(
-       _______, _______, KC_PGDN, _______, C(KC_RGHT), C(KC_LEFT),                               KC_DOWN, _______, KC_PGUP, _______, _______, _______,
-       _______, _______, _______, KC_LEFT, _______, _______,                                     _______, _______, ENDW,     _______, _______, _______,
-       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, KC_UP,   KC_RGHT, _______, _______, _______, _______,
-                                  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
+	 [_RAISE] = LAYOUT_ferris_wrapper(
+       _______, _________________NAV_L1____________________,                                        _________________NAV_R1____________________, _______,
+       _______, _________________NAV_L2____________________,                                        _________________NAV_R2____________________, _______,
+       _______, _________________NAV_L3____________________, _______, _______,  _______, _______,   _________________NAV_R3____________________, _______,
+                                  _______, _______, _______, _______, _______,  _______, _______,   _______, _______, _______
 	 ),
  /*
   * Layer template
@@ -137,12 +93,31 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   *                        |      |      |      |      |      |  |      |      |      |      |      |
   *                        `----------------------------------'  `----------------------------------'
   */
-	 [_ADJUST] = LAYOUT(
-	   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,                                       KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,  KC_F12,
-	   _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
-	   _______, _______, _______, _______, QWERTY,  WORKMAN, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+	 [_ADJUST] = LAYOUT_ferris_wrapper(
+	   _______, _________________ADJUST_L1_________________,                                     _________________ADJUST_R1_________________, _______,
+	   _______, _________________ADJUST_L2_________________,                                     _________________ADJUST_R2_________________, _______,
+	   _______, _________________ADJUST_L3_________________, _______, _______, _______, _______, _________________ADJUST_R3_________________, _______,
 								  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______
 	 ),
+/*
+ * Base Layer: Alpha (view user file im not updating this picture)
+ *
+ * ,-------------------------------------------.                              ,-------------------------------------------.
+ * |   ESC  |   Q  |   W  |   E  |   R  |   T  |                              |   Y  |   U  |   I  |   O  |   P  |        |
+ * |--------+------+------+------+------+------|                              |------+------+------+------+------+--------|
+ * |   TAB  |   A  |   S  |   D  |   F  |   G  |                              |   H  |   J  |   K  |   L  |   ;  |    '   |
+ * |--------+------+------+------+------+------+-------------.  ,-------------+------+------+------+------+------+--------|
+ * |  CTRL  |   Z  |   X  |   C  |   V  |   B  |      |      |  |      |      |   N  |   M  |   ,  |   .  |   /  |  ENTER |
+ * `----------------------+------+------+------+------+------|  |------+------+------+------+------+----------------------'
+ *                        | GUI  |  ALT | LOWER| Space|      |  | SHIFT| Bksp | RAISE|      |      |
+ *                        `----------------------------------'  `----------------------------------'
+ */
+	[_GAME] = LAYOUT_ferris_wrapper(
+	KC_ESC, KC_Q,    KC_D,    KC_R,    KC_W,    KC_B,                                          KC_J,    KC_F,    KC_U,    KC_P,    KC_SCLN, KC_BSPC,
+	KC_TAB, HOME_A,  HOME_S,  HOME_H,  HOME_T,  KC_G,                                          KC_Y,    HOME_N,  HOME_E,  HOME_O,  HOME_I,  KC_QUOT,
+    XXXXXXX, KC_Z,    KC_X,    KC_M,    KC_C,    KC_V,  KC_LSFT, KC_SPC,     _______, KC_ENT,    KC_K,    KC_L,    KC_COMM, KC_DOT,  KC_SLSH, XXXXXXX,
+							   KC_LGUI, KC_LALT,  LOWER, KC_SPC,  _______,     _______, KC_BSPC,   RAISE,   XXXXXXX, _______
+	),
 // /*
 //  * Layer template
 //  *
@@ -157,7 +132,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 //  *                        |      |      |      |      |      |  |      |      |      |      |      |
 //  *                        `----------------------------------'  `----------------------------------'
 //  */
-//     [_LAYERINDEX] = LAYOUT(
+//     [_LAYERINDEX] = LAYOUT_ferris_wrapper(
 //       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
 //       _______, _______, _______, _______, _______, _______,                                     _______, _______, _______, _______, _______, _______,
 //       _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
@@ -166,9 +141,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 
-layer_state_t layer_state_set_user(layer_state_t state) {
-	return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
-}
 
 #ifdef ENCODER_ENABLE
 void encoder_update_user(uint8_t index, bool clockwise) {
@@ -197,6 +169,7 @@ bool lastl = false;
 bool lastr = false;
 #endif
 bool bksp = false;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	#ifdef CONSOLE_ENABLE
 	uprintf("KL: kc: %u, col: %u, row: %u, pressed: %u, total: %u\n", keycode, record->event.key.col, record->event.key.row, record->event.pressed, record->event.key.col + 10 * record->event.key.row);
@@ -212,49 +185,9 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 		}
 	}
 	#endif
-	switch (keycode) {
-		case QWERTY:
-			if (record->event.pressed) {
-				set_single_persistent_default_layer(_QWERTY);
-			}
-			return false;
-			break;
-		case WORKMAN:
-			if (record->event.pressed) {
-				set_single_persistent_default_layer(_WORKMAN);
-			}
-			return false;
-			break;
-		case SBKSP:
-			if (record->event.pressed) {
-				register_code(KC_LSFT);
-				bksp = true;
-			}
-			else {
-				unregister_code(KC_LSFT);
-				if (bksp) {
-					tap_code(KC_BSPC);
-				}
-			}
-			return false;
-			break;
-        case ENDW:
-            if (record->event.pressed) {
-                register_code(KC_LCTL);
-                tap_code(KC_RGHT);
-                unregister_code(KC_LCTL);
-                tap_code(KC_LEFT);
-            }
-	}
-	bksp = false;
-	return true;
-
+    return true;
 }
-
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
+/*
 const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
 	{{0, 4}, {1, 4}, {2, 4}, {3, 4}, {4, 4}, {5, 4}, {6, 4}, {7, 4}},
 	{{0, 5}, {1, 5}, {2, 5}, {3, 5}, {4, 5}, {5, 5}, {6, 5}, {7, 5}},
@@ -265,13 +198,9 @@ const keypos_t hand_swap_config[MATRIX_ROWS][MATRIX_COLS] = {
 	{{0, 2}, {1, 2}, {2, 2}, {3, 2}, {4, 2}, {5, 2}, {6, 2}, {7, 2}},
 	{{0, 3}, {1, 3}, {2, 3}, {3, 3}, {4, 3}, {5, 3}, {6, 3}, {7, 3}}
 };
+*/
 
 
->>>>>>> Rename to lowercase
-=======
->>>>>>> rebase and add back nyquist that was lost by rename
-=======
->>>>>>> b02d6a4300ef26ff580e2c4ab6284a529ea0bc10
 #ifdef OLED_DRIVER_ENABLE
 oled_rotation_t oled_init_user(oled_rotation_t rotation) {
 	return OLED_ROTATION_180;
@@ -709,6 +638,7 @@ static void render_anim(void) {
 bool wpm_keycode_user(uint16_t keycode) {
 	return true;
 }
+/*
 static void render_logo(void) {
 	oled_set_cursor(0,0);
 	oled_write_P(PSTR(" play asc "), false);
@@ -717,14 +647,16 @@ static void render_logo(void) {
 	oled_set_cursor(6,6);
 	oled_write_P(PSTR(" play asc "), false);
 }
+*/
 void oled_task_user(void) {
 	if (is_keyboard_master()) {
 		render_anim();
+        /*
 		oled_set_cursor(0,7);
 		sprintf(wpm_str, "APM: %03d   ", get_current_wpm());
 		oled_write(wpm_str, false);
 		switch (get_highest_layer(layer_state)) {
-			case _QWERTY:
+			case _ALPHA:
 				oled_write_ln_P(PSTR("base"), false);
 				break;
 			case _LOWER:
@@ -738,10 +670,10 @@ void oled_task_user(void) {
 				break;
 			default:
 				oled_write_ln_P(PSTR("Undefined"), false);
-		}
+		}*/
 	} else {
-		render_logo();
-		oled_scroll_left();
+		//render_logo();
+		//oled_scroll_left();
 
 	}
 }

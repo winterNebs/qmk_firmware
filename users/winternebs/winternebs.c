@@ -1,8 +1,19 @@
+
 #include "winternebs.h"
-#include "g/keymap_combo.h"
+// #include "g/keymap_combo.h"
 #ifdef CONSOLE_ENABLE
 #    include "print.h"
 #endif
+
+const uint16_t PROGMEM qesc[]   = {KC_SPC, KC_Q, COMBO_END};      //    KC_ESC,
+const uint16_t PROGMEM deleto[] = {KC_SPC, HOME_A, COMBO_END};    //  KC_DEL,
+const uint16_t PROGMEM iqt[]    = {KC_BSPC, HOME_I, COMBO_END};   // KC_QUOT,
+const uint16_t PROGMEM bsl[]    = {KC_BSPC, KC_SLSH, COMBO_END};  // KC_BSLS,
+const uint16_t PROGMEM btick[]  = {KC_SPC, KC_Z, COMBO_END};      //    KC_GRV,
+                                                                  //
+combo_t key_combos[] = {
+    COMBO(qesc, KC_ESC), COMBO(deleto, KC_DEL), COMBO(iqt, KC_QUOT), COMBO(bsl, KC_BSLS), COMBO(btick, KC_GRV),
+};
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
@@ -13,22 +24,32 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     }
     return true;
 }
-layer_state_t layer_state_set_user(layer_state_t state) { return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST); }
-bool          get_ignore_mod_tap_interrupt(uint16_t keycode, keyrecord_t *record) {
+bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
+#ifdef CONSOLE_ENABLE
+    uprintf("%u", get_highest_layer(layer_state | default_layer_state));
+    uprintf("%u", _GAME);
+#endif
+    if (layer_state_cmp(get_highest_layer(layer_state | default_layer_state), _GAME)) {
+        return false;
+    }
+
+    return true;
+}
+layer_state_t layer_state_set_user(layer_state_t state) {
+    /*
+    enable_combo();
+    if (layer_state_cmp(state, _GAME)) {
+        disable_combo();
+    }*/
+    return update_tri_layer_state(state, _LOWER, _RAISE, _ADJUST);
+}
+bool get_ignore_mod_tap_interrupt(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
         case LOWER:
             return false;
         default:
             return true;
     }
-}
-bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
-    /* Disable combo `SOME_COMBO` on layer `_LAYER_A` */
-    if (layer_state_is(_GAME)) {
-        return false;
-    }
-
-    return true;
 }
 uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
     switch (keycode) {
