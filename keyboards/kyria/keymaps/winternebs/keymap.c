@@ -34,11 +34,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                        |  GUI |  ESC | LOWER| Space| SWAP |  | SWAP | Bksp | RAISE|      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
-	[_ALPHA] = LAYOUT_ferris_wrapper(
+	[_ALPHA] = LAYOUT_kyria(
 	KC_ESC,  _________________WORKMAN_L1________________,                                           _________________WORKMAN_R1________________, KC_DEL,
 	KC_TAB,  _________________WORKMAN_L2________________,                                          _________________WORKMAN_R2________________, KC_QUOT,
 	KC_LCTL, _________________WORKMAN_L3________________, _______, _______,     _______, _______,  _________________WORKMAN_R3________________, KC_ENT,
 							   KC_LGUI, KC_LALT, ____THUMB_L____, _______,     KC_LSFT, ____THUMB_R____, _______, _______
+	),
+	[_QWERTY] = LAYOUT_kyria(
+	KC_ESC,  _________________QWERTY_L1_________________,                                           _________________QWERTY_R1_________________, KC_DEL,
+	KC_TAB,  _________________QWERTY_L2_________________,                                          _________________QWERTY_R2_________________, KC_QUOT,
+	KC_LCTL, _________________QWERTY_L3_________________, KC_LSFT, _______,     _______, _______,  _________________QWERTY_R3_________________, KC_ENT,
+							   KC_LGUI, KC_LALT, ____THUMB_L____, KC_LSFT,     KC_LSFT, ____THUMB_R____, _______, _______
 	),
 /*
  * Lower Layer: NUM/symb
@@ -53,7 +59,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                        |prints|      |      |      |      |  |      |      |      |      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
-	[_LOWER] = LAYOUT_ferris_wrapper(
+	[_LOWER] = LAYOUT_kyria(
 	KC_GRV,  _________________SYMBOL_L1_________________,                                         _________________SYMBOL_R1_________________, _______,
 	KC_DEL,  _________________SYMBOL_L2_________________,                                         _________________SYMBOL_R2_________________, KC_BSLS,
 	_______, _________________SYMBOL_L3_________________, _______, _______,     _______, _______, _________________SYMBOL_R3_________________, _______,
@@ -73,7 +79,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   *                        |      |      |      |      |      |  |      |      |      |      |      |
   *                        `----------------------------------'  `----------------------------------'
   */
-	 [_RAISE] = LAYOUT_ferris_wrapper(
+	 [_RAISE] = LAYOUT_kyria(
        _______, _________________NAV_L1____________________,                                        _________________NAV_R1____________________, _______,
        _______, _________________NAV_L2____________________,                                        _________________NAV_R2____________________, _______,
        _______, _________________NAV_L3____________________, _______, _______,  _______, _______,   _________________NAV_R3____________________, _______,
@@ -93,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   *                        |      |      |      |      |      |  |      |      |      |      |      |
   *                        `----------------------------------'  `----------------------------------'
   */
-	 [_ADJUST] = LAYOUT_ferris_wrapper(
+	 [_ADJUST] = LAYOUT_kyria(
 	   _______, _________________ADJUST_L1_________________,                                     _________________ADJUST_R1_________________, _______,
 	   _______, _________________ADJUST_L2_________________,                                     _________________ADJUST_R2_________________, _______,
 	   _______, _________________ADJUST_L3_________________, _______, _______, _______, _______, _________________ADJUST_R3_________________, _______,
@@ -112,7 +118,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
  *                        | GUI  |  ALT | LOWER| Space|      |  | SHIFT| Bksp | RAISE|      |      |
  *                        `----------------------------------'  `----------------------------------'
  */
-	[_GAME] = LAYOUT_ferris_wrapper(
+	[_GAME] = LAYOUT_kyria(
 	KC_ESC, KC_Q,    KC_D,    KC_R,    KC_W,    KC_B,                                          KC_J,    KC_F,    KC_U,    KC_P,    KC_SCLN, KC_BSPC,
 	KC_TAB, HOME_A,  HOME_S,  HOME_H,  HOME_T,  KC_G,                                          KC_Y,    HOME_N,  HOME_E,  HOME_O,  HOME_I,  KC_QUOT,
     XXXXXXX, KC_Z,    KC_X,    KC_M,    KC_C,    KC_V,  KC_LSFT, KC_SPC,     _______, KC_ENT,    KC_K,    KC_L,    KC_COMM, KC_DOT,  KC_SLSH, XXXXXXX,

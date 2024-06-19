@@ -12,7 +12,7 @@ COMBO_ENABLE = yes
 VERBOSE 		 							= yes
 #DEBUG_MATRIX_SCAN_RATE   	= no
 #DEBUG_MATRIX		 					= yes
-#CONSOLE_ENABLE						= no
-CONSOLE_ENABLE						= yes
+CONSOLE_ENABLE						= no
+#CONSOLE_ENABLE						= yes
 
 #SWAP_HANDS_ENABLE = yes

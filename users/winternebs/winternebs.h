@@ -8,7 +8,7 @@
 #define LAYOUT_gergoplex_wrapper(...)   LAYOUT_gergoplex(__VA_ARGS__)
 #define LAYOUT_ferris_wrapper(...)   LAYOUT(__VA_ARGS__)
 #define LAYOUT_nyquist_wrapper(...)   LAYOUT_ortho_5x12(__VA_ARGS__)
-
+#define LAYOUT_kyria(...)   LAYOUT(__VA_ARGS__)
 
 #define RAISE LT(_RAISE, KC_ENT)
 #define LOWER LT(_LOWER, KC_TAB)
@@ -24,6 +24,7 @@
 enum layers{
     _ALPHA = 0,   // default
     _GAME,
+    _QWERTY,
     _LOWER,
     _RAISE,
     _ADJUST,
@@ -106,7 +107,7 @@ typedef enum {
 
 #define _________________ADJUST_L1_________________         KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5
 #define _________________ADJUST_L2_________________         KC_F11,  _______, _______, _______, _______
-#define _________________ADJUST_L3_________________         _______, _______, DF(_OSRS), DF(_ALPHA), DF(_GAME)
+#define _________________ADJUST_L3_________________         _______, DF(_QWERTY), DF(_OSRS), DF(_ALPHA), DF(_GAME)
 
 #define _________________ADJUST_R1_________________         KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10
 #define _________________ADJUST_R2_________________         _______, _______, _______, _______, KC_F12

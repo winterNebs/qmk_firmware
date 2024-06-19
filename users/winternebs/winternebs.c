@@ -15,15 +15,15 @@ combo_t key_combos[] = {
     COMBO(qesc, KC_ESC), COMBO(deleto, KC_DEL), COMBO(iqt, KC_QUOT), COMBO(bsl, KC_BSLS), COMBO(btick, KC_GRV),
 };
 
+#ifdef CONSOLE_ENABLE
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
     if (record->event.pressed) {
-#ifdef CONSOLE_ENABLE
         uprintf("0x%04X,%u,%u,%u\n", keycode, record->event.key.row, record->event.key.col, get_highest_layer(layer_state));
         uprintf("%u", _GAME);
-#endif
     }
     return true;
 }
+#endif
 bool combo_should_trigger(uint16_t combo_index, combo_t *combo, uint16_t keycode, keyrecord_t *record) {
 #ifdef CONSOLE_ENABLE
     uprintf("%u", get_highest_layer(layer_state | default_layer_state));
